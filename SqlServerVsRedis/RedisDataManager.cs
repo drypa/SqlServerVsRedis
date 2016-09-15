@@ -2,10 +2,15 @@
 
 namespace SqlServerVsRedis
 {
-    internal class SqlServerDataSaver<T> : IDataSaver<T>
+    internal sealed class RedisDataManager<T> : IDataManager<T>
         where T : class, new()
     {
         public void Save(T data, Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T Load(Guid id)
         {
             throw new NotImplementedException();
         }

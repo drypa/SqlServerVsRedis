@@ -2,10 +2,11 @@
 
 namespace SqlServerVsRedis
 {
-    public interface IDataSaver<in T>
+    public interface IDataManager<T>
         where T : class, new()
     {
         void Save(T data, Guid id);
+        T Load(Guid id);
         void Delete(Guid id);
     }
 }
