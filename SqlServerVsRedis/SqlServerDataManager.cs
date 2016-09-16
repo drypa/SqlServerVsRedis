@@ -7,9 +7,9 @@ namespace SqlServerVsRedis
 {
     internal sealed class SqlServerDataManager : IDataManager<byte[]>
     {
-        private const string SqlDeleteCommand = "DELETE FROM dbo.Data WHERE Id = @id";
-        private const string SqlInsertCommand = "INSERT INTO dbo.Data (Id, Data) VALUES (@id, @data)";
-        private const string SqlSelectCommand = "SELECT Data FROM dbo.Data WHERE Id = @id";
+        private const string SqlDeleteCommand = "DELETE FROM dbo.Datas WHERE Id = @id";
+        private const string SqlInsertCommand = "INSERT INTO dbo.Datas (Id, Data) VALUES (@id, @data)";
+        private const string SqlSelectCommand = "SELECT Data FROM dbo.Datas WHERE Id = @id";
 
         private readonly ConnectionStringSettings connectionString = ConfigurationManager.ConnectionStrings["BlobTest"];
 
@@ -25,6 +25,8 @@ namespace SqlServerVsRedis
                 }
             }
         }
+
+        public string Type => "SQL";
 
         public byte[] Load(Guid id)
         {

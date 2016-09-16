@@ -1,23 +1,38 @@
 ﻿using System;
+using StackExchange.Redis;
 
 namespace SqlServerVsRedis
 {
-    internal sealed class RedisDataManager<T> : IDataManager<T>
-        where T : class, new()
+    internal sealed class RedisDataManager : IDataManager<byte[]>
     {
-        public void Save(T data, Guid id)
+        public void Save(byte[] data, Guid id)
         {
-            throw new NotImplementedException();
+            using (ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("localhost"))
+            {
+
+                IDatabase db = redis.GetDatabase();
+                db.StringSet(id.ToString(), data);
+            }
         }
 
-        public T Load(Guid id)
+        public byte[] Load(Guid id)
         {
-            throw new NotImplementedException();
+            using (ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("localhost"))
+            {
+                IDatabase db = redis.GetDatabase();
+                return db.StringGet(id.ToString());
+            }
         }
 
         public void Delete(Guid id)
         {
-            throw new NotImplementedException();
+            using (ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("localhost"))
+            {
+                IDatabase db = redis.GetDatabase();
+                db.KeyDelete(id.ToString());
+            }
         }
+
+        public string Type => "Redis";
     }
 }

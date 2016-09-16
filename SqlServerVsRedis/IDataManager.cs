@@ -7,5 +7,6 @@ namespace SqlServerVsRedis
         void Save(T data, Guid id);
         T Load(Guid id);
         void Delete(Guid id);
+        string Type { get; }
     }
 }
