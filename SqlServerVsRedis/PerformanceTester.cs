@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace SqlServerVsRedis
 {
-    public class PerformanceTester<T>
-        where T : class, new()
+    public class PerformanceTester
+
     {
-        private readonly IDataManager<T> dataManager;
+        private readonly IDataManager<byte[]> dataManager;
         private readonly List<Guid> idPool;
 
-        public PerformanceTester(IDataManager<T> dataManager, int iterationCount)
+        public PerformanceTester(IDataManager<byte[]> dataManager, int iterationCount)
         {
             this.dataManager = dataManager;
             idPool = new List<Guid>(iterationCount);
@@ -23,7 +23,10 @@ namespace SqlServerVsRedis
         {
             foreach (Guid id in idPool)
             {
-                dataManager.Delete(id);
+                using (new StopwatchTimer((time) => { Console.WriteLine($"Delete\tlength:\t?\tTime:\t{time}"); }))
+                {
+                    dataManager.Delete(id);
+                }
             }
         }
 
@@ -31,15 +34,22 @@ namespace SqlServerVsRedis
         {
             foreach (Guid id in idPool)
             {
-                T data = dataManager.Load(id);
+                byte[] data = new byte[0];
+                using (new StopwatchTimer((time) => { Console.WriteLine($"Load\tlength:\t{data.Length}\tTime:\t{time}"); }))
+                {
+                    data = dataManager.Load(id);
+                }
             }
         }
 
-        public void DoSave(T data)
+        public void DoSave(byte[] data)
         {
             foreach (Guid id in idPool)
             {
-                dataManager.Save(data, id);
+                using (new StopwatchTimer((time) => { Console.WriteLine($"Save\tlength:\t{data.Length}\tTime:\t{time}"); }))
+                {
+                    dataManager.Save(data, id);
+                }
             }
         }
     }

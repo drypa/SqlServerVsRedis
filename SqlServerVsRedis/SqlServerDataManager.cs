@@ -5,8 +5,7 @@ using System.Data.SqlClient;
 
 namespace SqlServerVsRedis
 {
-    internal sealed class SqlServerDataManager<T> : IDataManager<T>
-        where T : class, new()
+    internal sealed class SqlServerDataManager : IDataManager<byte[]>
     {
         private const string SqlDeleteCommand = "DELETE FROM dbo.Data WHERE Id = @id";
         private const string SqlInsertCommand = "INSERT INTO dbo.Data (Id, Data) VALUES (@id, @data)";
@@ -27,9 +26,8 @@ namespace SqlServerVsRedis
             }
         }
 
-        public T Load(Guid id)
+        public byte[] Load(Guid id)
         {
-            var serializer = new DataSerializer();
             byte[] data;
             using (var connection = new SqlConnection(connectionString.ConnectionString))
             {
@@ -40,21 +38,19 @@ namespace SqlServerVsRedis
                     data = command.ExecuteScalar() as byte[];
                 }
             }
-            return serializer.FromProto<T>(data);
+            return data;
         }
 
-        public void Save(T data, Guid id)
+        public void Save(byte[] data, Guid id)
         {
-            var serializer = new DataSerializer();
-            byte[] bytes = serializer.ToProto(data);
             using (var connection = new SqlConnection(connectionString.ConnectionString))
             {
                 connection.Open();
                 using (var command = new SqlCommand(SqlInsertCommand, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
-                    SqlParameter dataParameter = command.Parameters.Add("@data", SqlDbType.VarBinary, bytes.Length);
-                    dataParameter.Value = bytes;
+                    SqlParameter dataParameter = command.Parameters.Add("@data", SqlDbType.VarBinary, data.Length);
+                    dataParameter.Value = data;
                     command.ExecuteNonQuery();
                 }
             }
