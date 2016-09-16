@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace SqlServerVsRedis
 {
@@ -10,6 +7,9 @@ namespace SqlServerVsRedis
     {
         static void Main(string[] args)
         {
+            FileStream filestream = new FileStream("stat.txt", FileMode.OpenOrCreate);
+            var streamwriter = new StreamWriter(filestream) { AutoFlush = true };
+            Console.SetOut(streamwriter);
         }
     }
 }
